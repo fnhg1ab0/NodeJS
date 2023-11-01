@@ -13,8 +13,11 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/', (req, res, next) => {
-    console.log(adminData.products);
-    res.sendFile(path.join(pathRoot, 'views', 'shop.html')); // send response and the middleware will not forward to the next middleware
+    // console.log(adminData.products);
+    // res.sendFile(path.join(pathRoot, 'views', 'shop.html')); // send response and the middleware will not forward to the next middleware
+
+    // render when using template engine
+    res.render('shop', {prods: adminData.products, docTitle: 'Shop'});
 });
 
 module.exports = router;
