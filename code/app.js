@@ -26,3 +26,6 @@ app.use((req, res, next) => {
 });
 
 app.listen(3000);
+
+// install express: npm install --save express
+//install body-parser: npm install --save body-parser
