@@ -16,7 +16,7 @@ app.use(express.static(path.join(pathRoot, 'public')));
 
 // using middleware to forward to the next adjacent middleware from top to bottom
 
-app.use('/admin', adminRoutes);
+app.use('/admin', adminRoutes.routes);
 
 app.use(shopRoutes);
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const pathRoot = require('../utils/path');
+const adminData = require('./admin');
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/', (req, res, next) => {
-    console.log('In another middleware!');
+    console.log(adminData.products);
     res.sendFile(path.join(pathRoot, 'views', 'shop.html')); // send response and the middleware will not forward to the next middleware
 });
 
