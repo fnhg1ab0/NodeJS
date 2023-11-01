@@ -1,25 +1,28 @@
-const http = require('http');
-const routes = require('./routes');
+const express = require('express');
+const bodyParser = require('body-parser');
 
-const server = http.createServer(routes);
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+// const path = require("path");
+const pathRoot = require("./utils/path");
+const path = require("path");
 
-server.listen(3000);
+const app = express();
 
-// run project:
-// npm start
-// or
-// node app.js
-// or
-// if you custom script key in package.json like this: "start_server": "node app.js"
-// npm run start_server
-// or
-// if you install nodemon globally, you can run:
-// nodemon app.js
-// if you install nodemon locally, you can set script key in package.json like this: "start": "nodemon app.js"
-// and run: npm start
+app.use(bodyParser.urlencoded({extended: false}));
 
-// install nodemon in dev mode:
-// npm install --save-dev nodemon
-// with: save is for production mode, save-dev is for development mode
-// install nodemon in global mode:
-// npm install -g nodemon
+// serve static files
+app.use(express.static(path.join(pathRoot, 'public')));
+
+// using middleware to forward to the next adjacent middleware from top to bottom
+
+app.use('/admin', adminRoutes);
+
+app.use(shopRoutes);
+
+// add a 404 page
+app.use((req, res, next) => {
+    res.status(404).sendFile(path.join(pathRoot, 'views', '404.html'));
+});
+
+app.listen(3000);
