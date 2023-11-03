@@ -17,7 +17,14 @@ router.get('/', (req, res, next) => {
     // res.sendFile(path.join(pathRoot, 'views', 'shop.html')); // send response and the middleware will not forward to the next middleware
 
     // render when using template engine
-    res.render('shop', {prods: adminData.products, docTitle: 'Shop'});
+    res.render('shop', {
+        prods: adminData.products,
+        docTitle: 'Shop',
+        path: '/',
+        hasProducts: adminData.products.length > 0,
+        activeShop: true,
+        productCSS: true
+    });
 });
 
 module.exports = router;
