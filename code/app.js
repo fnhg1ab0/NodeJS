@@ -7,8 +7,6 @@ const pathRoot = require("./utils/path");
 const path = require("path");
 const errorController = require('./controllers/errors');
 
-const expressHbs = require('express-handlebars');
-
 // create an express application
 const app = express();
 
