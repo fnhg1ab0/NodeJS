@@ -98,3 +98,4 @@ sql
 // install pug: npm install --save pug
 // install mysql: npm install --save mysql2
 // install sequelize: npm install --save sequelize
+// install mongodb: npm install --save mongodb
