@@ -59,7 +59,7 @@ module.exports = class User {
             .catch(err => console.log(err));
     }
 
-    static deleteItemFromCart(productId) {
+    deleteItemFromCart(productId) {
         const updatedCartItems = this.cart.items.filter(item => item.productId.toString() !== productId.toString());
         const db = getDB();
         const collection = db.collection('users');

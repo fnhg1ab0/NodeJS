@@ -1,5 +1,4 @@
 const Product = require("../models/Product");
-// const Cart = require("../models/Cart");
 
 exports.getIndex = (req, res, next) => {
     Product.fetchAll()

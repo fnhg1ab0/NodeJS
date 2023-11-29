@@ -1,6 +1,5 @@
 const {getDB} = require('../utils/database');
 const mongodb = require('mongodb');
-const User = require('./User');
 
 module.exports = class Product {
 
