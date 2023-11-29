@@ -11,11 +11,11 @@
         <ul class="orders">
             <% for (order of orders){ %>
                 <li class="orders__item">
-                    <h1># <%= order.id %></h1>
+                    <h1># <%= order._id %></h1>
                     <ul class="orders__products">
-                        <% for (product of order.products){ %>
+                        <% for (product of order.items){ %>
                             <li class="orders__products-item">
-                                <%= product.title %> (<%= product.orderItem.quantity %>)
+                                <%= product.title %> (<%= product.quantity %>)
                             </li>
                         <% } %>
                     </ul>
