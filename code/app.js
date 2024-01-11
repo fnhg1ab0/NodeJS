@@ -73,3 +73,6 @@ mongoose
 // npm install --save bcryptjs
 // npm install --save csurf
 // npm install --save connect-flash
+// npm install --save nodemailer
+// npm install --save nodemailer-sendgrid-transport
+// npm install --save express-validator
