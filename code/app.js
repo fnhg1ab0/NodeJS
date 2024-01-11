@@ -34,15 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: 'nccm8&zc%', resave: false, saveUninitialized: false, store: store}));
 app.use(csrfProtect);
 app.use(flash());
-app.use((req, res, next) => {
-    if (!req.session.user) return next();
-    User.findById(req.session.user._id)
-        .then(user => {
-            req.user = user;
-            next();
-        })
-        .catch(err => console.log(err));
-});
 
 //  tell expressjs the data that should be included in every rendered view
 app.use((req, res, next) => {
@@ -50,12 +41,37 @@ app.use((req, res, next) => {
     res.locals.csrfToken = req.csrfToken();
     next();
 })
+app.use((req, res, next) => {
+    if (!req.session.user) return next();
+    User.findById(req.session.user._id)
+        .then(user => {
+            if (!user) return next();
+            req.user = user;
+            next();
+        })
+        .catch(err => throw new Error(err));
+});
+
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
 app.use(errorController.get404);
+app.get('/500', errorController.get500);
+
+// error handling middleware with 4 params: err, req, res, next
+// with synchronous code, we can throw an error and it will be caught by this middleware
+// with asynchronous code, we need to call next(err) to pass the error to this middleware
+// to avoid loop, we need to render a page instead of redirecting to a page
+app.use((err, req, res, next) => {
+    // res.redirect('/500');
+//     res.status(err.httpStatusCode).render(...);
+    res.render('errors/500', {
+        pageTitle: 'Error!',
+        path: '/500',
+    });
+});
 
 mongoose
     .connect(
