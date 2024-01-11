@@ -1,7 +1,9 @@
 const path = require('path');
+const fs = require('fs');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const sessionStore = require('connect-mongodb-session')(session);
@@ -18,7 +20,35 @@ const app = express();
 const store = new sessionStore({
     url: MongoDbUrl,
     collection: 'sessions'
-})
+});
+
+const fileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // the first param is the error, if any error occurs, we can pass it to the cb function and multer will handle it
+        // if we don't want to handle the error, we can pass null as the first param
+        // the second param is the folder that multer will store the file in
+        fs.mkdir('./uploads/', (err) => {
+            cb(null, './uploads/');
+        });
+    },
+    filename: function (req, file, cb) {
+        // the first param is the error, if any error occurs, we can pass it to the cb function and multer will handle it
+        // if we don't want to handle the error, we can pass null as the first param
+        // the second param is the file name that multer will store the file in
+        cb(null, new Date().toISOString().replace(/:/g, '-') + '-' + file.originalname);
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    // cb(null, true) means we accept the file
+    // cb(null, false) means we don't accept the file
+    // cb(new Error('message')) means we don't accept the file and we throw an error
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg')
+        cb(null, true);
+    else
+        cb(null, false);
+
+}
 
 const csrfProtect = csrf();
 
@@ -30,7 +60,14 @@ const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({extended: false}));
+// use to parse the data that in not the text type
+// dest: 'images' is the folder that multer will store the file in
+// storage: fileStorage is the storage that multer will use to store the file
+app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'));
+
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.use(session({secret: 'nccm8&zc%', resave: false, saveUninitialized: false, store: store}));
 app.use(csrfProtect);
 app.use(flash());
@@ -49,7 +86,7 @@ app.use((req, res, next) => {
             req.user = user;
             next();
         })
-        .catch(err => throw new Error(err));
+        .catch(err => next(new Error(err)));
 });
 
 
@@ -57,26 +94,24 @@ app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
-app.use(errorController.get404);
 app.get('/500', errorController.get500);
+app.use(errorController.get404);
 
 // error handling middleware with 4 params: err, req, res, next
 // with synchronous code, we can throw an error and it will be caught by this middleware
 // with asynchronous code, we need to call next(err) to pass the error to this middleware
 // to avoid loop, we need to render a page instead of redirecting to a page
-app.use((err, req, res, next) => {
-    // res.redirect('/500');
-//     res.status(err.httpStatusCode).render(...);
-    res.render('errors/500', {
-        pageTitle: 'Error!',
-        path: '/500',
-    });
-});
+// app.use((err, req, res, next) => {
+//     // res.redirect('/500');
+// //     res.status(err.httpStatusCode).render(...);
+//     res.status(500).render('errors/500', {
+//         pageTitle: 'Error!',
+//         path: '/500',
+//     });
+// });
 
 mongoose
-    .connect(
-        MongoDbUrl
-    )
+    .connect(MongoDbUrl, {useNewUrlParser: true, useUnifiedTopology: true})
     .then(result => {
         app.listen(3000);
     })
@@ -84,11 +119,5 @@ mongoose
         console.log(err);
     });
 
-// npm install --save express-session
-// npm install --save connect-mongodb-session
-// npm install --save bcryptjs
-// npm install --save csurf
-// npm install --save connect-flash
-// npm install --save nodemailer
-// npm install --save nodemailer-sendgrid-transport
-// npm install --save express-validator
+// npm install --save multer
+// npm install --save pdfkit
