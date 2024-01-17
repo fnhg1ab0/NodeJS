@@ -1,9 +1,9 @@
 const express = require('express');
+const { createServer } = require('node:http');
 const path = require('path');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const mongoose = require('mongoose');
-
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
 
@@ -54,9 +54,15 @@ app.use((error, req, res, next) => {
 
 mongoose.connect('mongodb://localhost:27017/messages?retryWrites=true&w=majority')
     .then(result => {
-        app.listen(8080);
+        const server = createServer(app);
+        server.listen(8080);
+        const io = require('./socket').init(server);
+        io.on('connection', socket => {
+            console.log(`socket ${socket.id} connected`);
+        })
     })
     .catch(err => console.log(err));
 
 // npm install --save jsonwebtoken
-
+// npm install --save socket.io (in backend)
+// npm install --save socket.io-client (in frontend)
