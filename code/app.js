@@ -149,3 +149,4 @@ mongoose
 // npm install --save multer
 // npm install --save pdfkit
 // npm install --save stripe
+// openssl req -nodes -new -x509 -keyout server.key -out server.cert
