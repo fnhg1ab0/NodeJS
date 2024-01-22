@@ -11,6 +11,7 @@ const csrf = require('csurf');
 const flash = require('connect-flash');
 const helmet = require('helmet');
 const compression = require('compression');
+const morgan = require('morgan');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -60,11 +61,25 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
+// create file to store the log of the request to the server side
+// the flags: 'a' means append the log to the file instead of overwriting the file
+const accessLogStream = fs.createWriteStream(
+    path.join(__dirname, 'access.log'),
+    { flags: 'a'}
+);
+
 //  helmet is a package that helps us to secure our app by setting various http headers
 app.use(helmet());
 
-//  compression is a package that helps us to compress our response body
+//  compression is a package that helps us to compress our response body to reduce the size of the response
 app.use(compression());
+
+//  morgan is a package that helps us to log the request to the console or to a file or to a database...
+//  in this case, we log the request to the console in the combined format on server side
+// app.use(morgan('combined'));
+
+// in this case, we log the request to the file on server side
+app.use(morgan('combined', { stream: accessLogStream }));
 
 app.use(bodyParser.urlencoded({extended: false}));
 // use to parse the data that in not the text type
