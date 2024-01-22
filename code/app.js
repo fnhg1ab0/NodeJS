@@ -10,6 +10,7 @@ const sessionStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const helmet = require('helmet');
+const compression = require('compression');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -61,6 +62,9 @@ const authRoutes = require('./routes/auth');
 
 //  helmet is a package that helps us to secure our app by setting various http headers
 app.use(helmet());
+
+//  compression is a package that helps us to compress our response body
+app.use(compression());
 
 app.use(bodyParser.urlencoded({extended: false}));
 // use to parse the data that in not the text type
