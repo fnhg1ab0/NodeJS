@@ -13,12 +13,10 @@ const flash = require('connect-flash');
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
-const MongoDbUrl = 'mongodb://localhost:27017/nodejs';
-
 const app = express();
 
 const store = new sessionStore({
-    url: MongoDbUrl,
+    url: process.env.MONGODB_URI,
     collection: 'sessions'
 });
 
@@ -101,19 +99,19 @@ app.use(errorController.get404);
 // with synchronous code, we can throw an error and it will be caught by this middleware
 // with asynchronous code, we need to call next(err) to pass the error to this middleware
 // to avoid loop, we need to render a page instead of redirecting to a page
-// app.use((err, req, res, next) => {
-//     // res.redirect('/500');
-// //     res.status(err.httpStatusCode).render(...);
-//     res.status(500).render('errors/500', {
-//         pageTitle: 'Error!',
-//         path: '/500',
-//     });
-// });
+app.use((err, req, res, next) => {
+    // res.redirect('/500');
+//     res.status(err.httpStatusCode).render(...);
+    res.status(500).render('errors/500', {
+        pageTitle: 'Error!',
+        path: '/500',
+    });
+});
 
 mongoose
-    .connect(MongoDbUrl, {useNewUrlParser: true, useUnifiedTopology: true})
+    .connect(process.env.MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true})
     .then(result => {
-        app.listen(3000);
+        app.listen(process.env.PORT || 3000);
     })
     .catch(err => {
         console.log(err);
