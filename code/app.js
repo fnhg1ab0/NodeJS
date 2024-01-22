@@ -9,11 +9,13 @@ const session = require('express-session');
 const sessionStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const helmet = require('helmet');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
 const app = express();
+
 
 const store = new sessionStore({
     url: process.env.MONGODB_URI,
@@ -56,6 +58,9 @@ app.set('views', 'views');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
+
+//  helmet is a package that helps us to secure our app by setting various http headers
+app.use(helmet());
 
 app.use(bodyParser.urlencoded({extended: false}));
 // use to parse the data that in not the text type
